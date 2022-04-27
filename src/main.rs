@@ -339,7 +339,7 @@ fn main() {
         &mint_account_pubkey,
         &token_account_pubkey,
         &client,
-        String::from("https://ipfs.io/ipfs/QmYZZPwtxe4JXz6tPoKFwCCtsFn6TyXpwck6UAwHqxLmmL")
+        String::from("https://arweave.net/D8hncggOodbozD905qV6f4D_qP8xxNMmBi4Ke6yJTLA")
     );
 
     return;
