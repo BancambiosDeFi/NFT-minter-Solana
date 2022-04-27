@@ -130,6 +130,7 @@ fn mint_nft(
     mint_account_pubkey: &Pubkey,
     token_account_pubkey: &Pubkey,
     client: &RpcClient,
+    _uri: String,
 ) {
     let wallet_pubkey = wallet_keypair.pubkey();
 
@@ -157,7 +158,7 @@ fn mint_nft(
 
         upgrade_to_master_edition(
             &wallet_keypair,
-            &create_metadata_account(&wallet_keypair, &mint_account_pubkey, &client),
+            &create_metadata_account(&wallet_keypair, &mint_account_pubkey, &client, _uri),
             &mint_account_pubkey,
             &client,
         );
@@ -168,6 +169,7 @@ fn create_metadata_account(
     wallet_keypair: &Keypair,
     mint_account_pubkey: &Pubkey,
     client: &RpcClient,
+    _uri: String,
 ) -> Pubkey {
     let wallet_pubkey = wallet_keypair.pubkey();
 
@@ -180,9 +182,9 @@ fn create_metadata_account(
     let (metadata_key, _) = Pubkey::find_program_address(metadata_seeds, &program_key);
 
     // Test Metadata
-    let name = String::from("Jeff NFT");
-    let symbol = String::from(J");
-    let uri = String::from("https://solana.com");
+    let name = String::from("Bancambios Solana NFT");
+    let symbol = String::from("BSN");
+    let uri = _uri;
 
     let new_metadata_instruction = create_metadata_accounts(
         program_key,
@@ -337,6 +339,7 @@ fn main() {
         &mint_account_pubkey,
         &token_account_pubkey,
         &client,
+        String::from("https://ipfs.io/ipfs/QmYZZPwtxe4JXz6tPoKFwCCtsFn6TyXpwck6UAwHqxLmmL")
     );
 
     return;
