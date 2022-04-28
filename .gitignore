@@ -1,4 +1,8 @@
-/target
-Cargo.lock
-wallet.keypair
-node_modules
+/node_modules
+*.sw[po]
+/.cargo
+/dist
+.env
+src/client/util/store
+test-ledger/
+.DS_Store
