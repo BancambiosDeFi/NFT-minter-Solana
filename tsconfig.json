@@ -1,15 +1,10 @@
 {
-  "extends": "@tsconfig/recommended/tsconfig.json",
-  "ts-node": {
-    "compilerOptions": {
-      "module": "commonjs"
-    }
-  },
   "compilerOptions": {
-    "declaration": true,
-    "moduleResolution": "node",
-    "module": "es2015"
-  },
-  "include": ["tests/**/*"],
-  "exclude": ["node_modules"]
+    "types": ["mocha", "chai"],
+    "typeRoots": ["./node_modules/@types"],
+    "lib": ["es2015"],
+    "module": "commonjs",
+    "target": "es6",
+    "esModuleInterop": true
+  }
 }

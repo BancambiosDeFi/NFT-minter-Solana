@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
-// import { Program } from "@project-serum/anchor";
-// import { MetaplexAnchorNft } from "../target/types/metaplex_anchor_nft";
+import { Program } from "@project-serum/anchor";
+import { MetaplexAnchorNft } from "../target/types/metaplex_anchor_nft";
 import {
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
@@ -8,12 +8,15 @@ import {
   createInitializeMintInstruction,
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
+import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 const { PublicKey, SystemProgram } = anchor.web3;
 describe("nft", () => {
   // Configure the client to use the local cluster.
+  require("dotenv").config();
   anchor.setProvider(anchor.Provider.env());
+  console.log(anchor.Provider.env())
   const program = anchor.workspace
-    .MetaplexAnchorNft ;
+    .MetaplexAnchorNft as Program<MetaplexAnchorNft>;
 
   it("Is initialized!", async () => {
     // Add your test here.
