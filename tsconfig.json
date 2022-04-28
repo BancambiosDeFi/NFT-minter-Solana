@@ -10,6 +10,6 @@
     "moduleResolution": "node",
     "module": "es2015"
   },
-  "include": ["src/client/**/*"],
+  "include": ["tests/**/*"],
   "exclude": ["node_modules"]
 }
