@@ -198,7 +198,7 @@
     "@solana/web3.js" "^1.32.0"
     start-server-and-test "^1.14.0"
 
-"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.33.0", "@solana/web3.js@^1.36.0":
+"@solana/web3.js@^1.32.0", "@solana/web3.js@^1.36.0", "@solana/web3.js@^1.41.1":
   version "1.41.1"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.41.1.tgz#4f86df8de31ecd68b44ca67d27e446fefa2533d1"
   integrity sha512-Z92/E2+U8CcALXfXpx+D7YjIB4L8A9kSSc0UXCDzaIF0exawGogwDKz0znNuciSziOzLxHNgCxZ8GF22m9f8VQ==
