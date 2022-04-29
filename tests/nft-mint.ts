@@ -1,6 +1,6 @@
 import * as anchor from "@project-serum/anchor";
 import { Program } from "@project-serum/anchor";
-import { MetaplexAnchorNft } from "../target/types/metaplex_anchor_nft";
+import { NftMint } from "../target/types/nft_mint";
 import {
   TOKEN_PROGRAM_ID,
   createAssociatedTokenAccountInstruction,
@@ -9,20 +9,17 @@ import {
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
 import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+
+async function main() {
 const { PublicKey, SystemProgram } = anchor.web3;
-describe("nft", () => {
   // Configure the client to use the local cluster.
-  require("dotenv").config();
+  require("dotenv").config(); 
   anchor.setProvider(anchor.Provider.env());
-  console.log(anchor.Provider.env())
   const program = anchor.workspace
-    .MetaplexAnchorNft as Program<MetaplexAnchorNft>;
-
-  it("Is initialized!", async () => {
+    .NftMint as Program<NftMint>;
     // Add your test here.
-
     const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
-      "2kMz3S2RNA8jtHQcnNYuWkiCMGh2gRGvxycmTypfYqe3"
+      "6hUoUfq7LiddiLiy3DicZqN7v3csNUfnKHrJWaDVSkyD"
     );
     const lamports: number =
       await program.provider.connection.getMinimumBalanceForRentExemption(
@@ -58,8 +55,8 @@ describe("nft", () => {
         )
       )[0];
     };
-
     const mintKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
+    
     const NftTokenAccount = await getAssociatedTokenAddress(
       mintKey.publicKey,
       program.provider.wallet.publicKey
@@ -101,7 +98,7 @@ describe("nft", () => {
 
     console.log("Metadata address: ", metadataAddress.toBase58());
     console.log("MasterEdition: ", masterEdition.toBase58());
-
+    console.log("===rpc========",program.rpc.mintNft);
     const tx = await program.rpc.mintNft(
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
@@ -119,8 +116,12 @@ describe("nft", () => {
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           masterEdition: masterEdition,
         },
-      }
+      },
+      
     );
     console.log("Your transaction signature", tx);
-  });
-});
+}
+
+main()
+    .then(() => process.exit(0))
+    .catch((err) => console.error(err))

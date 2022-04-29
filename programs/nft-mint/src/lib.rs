@@ -4,10 +4,10 @@ use anchor_spl::token;
 use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
 
-declare_id!("HhyVsqnJexHUtyv8QKEq7J8i8wxLc14xJQbb9Sw4G3ic");
+declare_id!("6hUoUfq7LiddiLiy3DicZqN7v3csNUfnKHrJWaDVSkyD");
 
 #[program]
-pub mod metaplex_anchor_nft {
+pub mod nft_mint {
     use super::*;
 
     pub fn mint_nft(
