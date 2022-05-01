@@ -9,7 +9,7 @@ use anchor_lang::solana_program::{
 use anchor_spl::token;
 use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
-// use std::str::FromStr;
+use std::str::FromStr;
 
 declare_id!("4nEddrKTzp3ZKx2KFYGV6o6uNezYQhLp6x5Nf6yAdfU5");
 
@@ -29,7 +29,7 @@ pub mod nft_mint {
         uri: String,
         title: String,
         // accounts: &[AccountInfo],
-        amount: u64,
+        // amount: u64,
     ) -> Result<()> {
 
     // let acc_iter = &mut accounts.iter();
@@ -261,6 +261,4 @@ pub struct MintNFT<'info> {
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub master_edition: UncheckedAccount<'info>,
-    // pub wallet_address: AccountInfo<'info>,
-    // pub ata_address: AccountInfo<'info>,
 }
