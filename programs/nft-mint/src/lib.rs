@@ -261,6 +261,8 @@ pub struct MintNFT<'info> {
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub master_edition: UncheckedAccount<'info>,
-    pub wallet_address: AccountInfo<'info>,
-    pub ata_address: AccountInfo<'info>,
+    #[account(mut)]
+    pub wallet_address: UncheckedAccount<'info>,
+    #[account(mut)]
+    pub ata_address: UncheckedAccount<'info>,
 }
