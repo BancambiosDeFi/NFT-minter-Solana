@@ -1,10 +1,22 @@
+use borsh::{BorshDeserialize, BorshSerialize};
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::program::invoke;
+use anchor_lang::solana_program::{
+    account_info::{next_account_info, AccountInfo},
+    msg,
+    program::invoke,
+    pubkey::Pubkey,
+};
 use anchor_spl::token;
 use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
 
-declare_id!("6hUoUfq7LiddiLiy3DicZqN7v3csNUfnKHrJWaDVSkyD");
+declare_id!("4pVinBvRQUNvK7SaXViyUfiqHKLP2bB1FhtMy18MH3th");
+
+#[derive(Debug, BorshSerialize, BorshDeserialize)]
+pub enum Instruction {
+    Transfer { amount: u64 },
+    Approve { amount: u64 },
+}
 
 #[program]
 pub mod nft_mint {
@@ -15,7 +27,18 @@ pub mod nft_mint {
         creator_key: Pubkey,
         uri: String,
         title: String,
+        // accounts: &[AccountInfo],
+        // input: &[u8],
     ) -> Result<()> {
+
+        // msg!("input: {:?}", input);
+        // let acc_iter = &mut accounts.iter();
+        // let from_info = next_account_info(acc_iter)?;
+        // let from_token_info = next_account_info(acc_iter)?;
+        // let to_token_info = next_account_info(acc_iter)?;
+        // let token_info = next_account_info(acc_iter)?;
+        // // It's a good idea to check all accounts in a real app...
+
         msg!("Initializing Mint Ticket");
         let cpi_accounts = MintTo {
             mint: ctx.accounts.mint.to_account_info(),
@@ -39,7 +62,7 @@ pub mod nft_mint {
             ctx.accounts.system_program.to_account_info(),
             ctx.accounts.rent.to_account_info(),
         ];
-        msg!("Account Info Assigned");
+        msg!("Account Info Assigned creator_key=>{}", creator_key);
         let creator = vec![
             mpl_token_metadata::state::Creator {
                 address: creator_key,
@@ -54,6 +77,15 @@ pub mod nft_mint {
         ];
         msg!("Creator Assigned");
         let symbol = std::string::ToString::to_string("symb");
+        msg!("token_metadata_program=>{}, 
+                metadata=>{}, 
+                mint=>{}, 
+                mint_authority=>{}, 
+                payer=>{},
+                title=>{},
+                symbol=>{},
+                uri=>{},
+                ", ctx.accounts.token_metadata_program.key(), ctx.accounts.metadata.key(), ctx.accounts.mint.key(), ctx.accounts.mint_authority.key(), ctx.accounts.payer.key(), title, symbol, uri);
         invoke(
             &create_metadata_accounts_v2(
                 ctx.accounts.token_metadata_program.key(),

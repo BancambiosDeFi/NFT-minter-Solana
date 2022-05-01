@@ -6,9 +6,13 @@ import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
   createInitializeMintInstruction,
+  createAssociatedTokenAccount,
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
+import {readFileSync} from "fs"
+import {Connection, Keypair, PublicKey, sendAndConfirmTransaction, Transaction, TransactionInstruction,} from "@solana/web3.js"
+import lo from "buffer-layout"
+import BN from "bn.js"
 
 async function main() {
 const { PublicKey, SystemProgram } = anchor.web3;
@@ -19,7 +23,7 @@ const { PublicKey, SystemProgram } = anchor.web3;
     .NftMint as Program<NftMint>;
     // Add your test here.
     const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
-      "6hUoUfq7LiddiLiy3DicZqN7v3csNUfnKHrJWaDVSkyD"
+      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
     );
     const lamports: number =
       await program.provider.connection.getMinimumBalanceForRentExemption(
