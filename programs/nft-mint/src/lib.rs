@@ -11,7 +11,7 @@ use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
 use std::str::FromStr;
 
-declare_id!("4nEddrKTzp3ZKx2KFYGV6o6uNezYQhLp6x5Nf6yAdfU5");
+declare_id!("B6aACzA4CXjN3aBNRuLR9HNRKnhzrfbaVYcQFB54DbRE");
 
 #[derive(Debug, BorshSerialize, BorshDeserialize)]
 pub enum Instruction {
