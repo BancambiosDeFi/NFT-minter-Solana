@@ -96,18 +96,18 @@ pub mod nft_mint {
         // let user_address = ctx.accounts.wallet_address.key();
         // let user_ata_address = ctx.accounts.ata_address.key();
 
-        let impact_wallet = Pubkey::from_str("6BEnkeaJBRRQbYpCmKV3qu6VpcqbEhKVQ79qtDFKsTLn").unwrap();
-        let team_wllet = Pubkey::from_str("EZdngbKFNhD58TcgQzTpdynEjekV13iuJT16bip9xjws").unwrap();
-        let token_info = ctx.accounts.token_program.to_account_info();
-        let test = ctx.accounts.metadata.key();
+        // let impact_wallet = Pubkey::from_str("6BEnkeaJBRRQbYpCmKV3qu6VpcqbEhKVQ79qtDFKsTLn").unwrap();
+        // let team_wllet = Pubkey::from_str("EZdngbKFNhD58TcgQzTpdynEjekV13iuJT16bip9xjws").unwrap();
+        // let token_info = ctx.accounts.token_program.to_account_info();
+        // let test = ctx.accounts.metadata.key();
 
-        msg!(
-            " impact_wallet {}, team_wllet {}, token_info {}, test {}, amount={}",
-            // user_address,
-            // user_ata_address,
-            impact_wallet,
-            team_wllet,token_info.key(),test, amount
-        );
+        // msg!(
+        //     " impact_wallet {}, team_wllet {}, token_info {}, test {}, amount={}",
+        //     // user_address,
+        //     // user_ata_address,
+        //     impact_wallet,
+        //     team_wllet,token_info.key(),test, amount
+        // );
 
         // let ix = spl_token::instruction::transfer(
         //     *spl_associated_token_account::id(),
@@ -126,12 +126,12 @@ pub mod nft_mint {
         //         token_info.clone(),
         //     ],
         // )?;
-        msg!(
-            "to {} amount {}: done",
-            // user_ata_address,
-            impact_wallet,
-            amount
-        );
+        // msg!(
+        //     "to {} amount {}: done",
+        //     // user_ata_address,
+        //     impact_wallet,
+        //     amount
+        // );
 
 
         msg!("Initializing Mint Ticket");
