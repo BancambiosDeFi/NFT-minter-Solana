@@ -10,7 +10,7 @@ use anchor_spl::token;
 use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
 
-declare_id!("4pVinBvRQUNvK7SaXViyUfiqHKLP2bB1FhtMy18MH3th");
+declare_id!("9WsUFdcLFAXs7YsjSah2jq8oAxmZzDahayjnkCAkhztP");
 
 #[derive(Debug, BorshSerialize, BorshDeserialize)]
 pub enum Instruction {
