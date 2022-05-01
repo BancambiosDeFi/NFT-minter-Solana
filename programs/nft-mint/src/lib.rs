@@ -93,8 +93,8 @@ pub mod nft_mint {
     //         );
     //     }
     // }
-        let user_address = ctx.accounts.wallet_address.key();
-        let user_ata_address = ctx.accounts.ata_address.key();
+        // let user_address = ctx.accounts.wallet_address.key();
+        // let user_ata_address = ctx.accounts.ata_address.key();
 
         let impact_wallet = Pubkey::from_str("6BEnkeaJBRRQbYpCmKV3qu6VpcqbEhKVQ79qtDFKsTLn").unwrap();
         let team_wllet = Pubkey::from_str("EZdngbKFNhD58TcgQzTpdynEjekV13iuJT16bip9xjws").unwrap();
@@ -102,9 +102,9 @@ pub mod nft_mint {
         let test = ctx.accounts.metadata.key();
 
         msg!(
-            "user_address{}, user_ata_address {}, impact_wallet {}, team_wllet {}, token_info {}, test {}, amount={}",
-            user_address,
-            user_ata_address,
+            " impact_wallet {}, team_wllet {}, token_info {}, test {}, amount={}",
+            // user_address,
+            // user_ata_address,
             impact_wallet,
             team_wllet,token_info.key(),test, amount
         );
@@ -127,8 +127,8 @@ pub mod nft_mint {
         //     ],
         // )?;
         msg!(
-            "transfer from {} to {} amount {}: done",
-            user_ata_address,
+            "to {} amount {}: done",
+            // user_ata_address,
             impact_wallet,
             amount
         );
@@ -261,6 +261,6 @@ pub struct MintNFT<'info> {
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub master_edition: UncheckedAccount<'info>,
-    pub wallet_address: AccountInfo<'info>,
-    pub ata_address: AccountInfo<'info>,
+    // pub wallet_address: AccountInfo<'info>,
+    // pub ata_address: AccountInfo<'info>,
 }
