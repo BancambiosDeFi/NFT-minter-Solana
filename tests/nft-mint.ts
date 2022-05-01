@@ -114,9 +114,11 @@ const { PublicKey, SystemProgram } = anchor.web3;
     console.log("===rpc========",program.rpc.mintNft);
     const connection = new Connection("https://api.devnet.solana.com", "confirmed")
     const userTokenPubkey = await getOrCreateAssociatedTokenAccount(connection, 
-        new anchor.web3.PublicKey("CZyEKArwVYSKkv9im3grGNXmggbPfS8YGUovBnzoKQ4s"), 
-        new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") // test USDT
+        new anchor.web3.PublicKey("CZyEKArwVYSKkv9im3grGNXmggbPfS8YGUovBnzoKQ4s"), // test USDT
+        new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") 
     );
+    console.log("userTokenPubkey", userTokenPubkey.toBase58())
+    console.log("walletAddress", new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro").toBase58())
     const tx = await program.rpc.mintNft(
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
