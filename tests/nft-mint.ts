@@ -118,7 +118,7 @@ const { PublicKey, SystemProgram } = anchor.web3;
         new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") 
     );
     console.log("userTokenPubkey", userTokenPubkey.toBase58())
-    console.log("walletAddress", new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro").toBase58())
+    console.log("walletAddress", program.provider.wallet.publicKey.toBase58())
     const tx = await program.rpc.mintNft(
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
@@ -135,8 +135,8 @@ const { PublicKey, SystemProgram } = anchor.web3;
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           masterEdition: masterEdition,
-          walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
-          ataAddress: userTokenPubkey,
+          // walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
+          // ataAddress: userTokenPubkey,
         },
       },
       
