@@ -1,7 +1,7 @@
 use borsh::{BorshDeserialize, BorshSerialize};
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{
-    account_info::{AccountInfo},
+    account_info::{next_account_info, AccountInfo},
     msg,
     program::invoke,
     pubkey::Pubkey,
@@ -9,7 +9,6 @@ use anchor_lang::solana_program::{
 use anchor_spl::token;
 use anchor_spl::token::{MintTo, Token};
 use mpl_token_metadata::instruction::{create_master_edition_v3, create_metadata_accounts_v2};
-use std::str::FromStr;
 
 declare_id!("4nEddrKTzp3ZKx2KFYGV6o6uNezYQhLp6x5Nf6yAdfU5");
 
@@ -29,110 +28,16 @@ pub mod nft_mint {
         uri: String,
         title: String,
         // accounts: &[AccountInfo],
-        amount: u64,
+        // input: &[u8],
     ) -> Result<()> {
 
-    // let acc_iter = &mut accounts.iter();
-    // let from_info = next_account_info(acc_iter)?;
-    // let from_token_info = next_account_info(acc_iter)?;
-    // let to_token_info = next_account_info(acc_iter)?;
-    // let token_info = next_account_info(acc_iter)?;
-    // // It's a good idea to check all accounts in a real app...
-
-    // match Instruction::try_from_slice(input)? {
-    //     Instruction::Transfer { amount } => {
-    //         msg!("transfer: {}", amount);
-    //         let ix = spl_token::instruction::transfer(
-    //             token_info.key,
-    //             from_token_info.key,
-    //             to_token_info.key,
-    //             from_info.key,
-    //             &[from_info.key],
-    //             amount,
-    //         )?;
-    //         invoke(
-    //             &ix,
-    //             &[
-    //                 from_token_info.clone(),
-    //                 to_token_info.clone(),
-    //                 from_info.clone(),
-    //                 token_info.clone(),
-    //             ],
-    //         )?;
-    //         msg!(
-    //             "transfer from {} to {} amount {}: done",
-    //             from_token_info.key,
-    //             to_token_info.key,
-    //             amount
-    //         );
-    //     }
-    //     Instruction::Approve { amount } => {
-    //         msg!("approve: {}", amount);
-    //         let ix = spl_token::instruction::approve(
-    //             token_info.key,
-    //             from_token_info.key,
-    //             to_token_info.key,
-    //             from_info.key,
-    //             &[from_info.key],
-    //             amount,
-    //         )?;
-    //         invoke(
-    //             &ix,
-    //             &[
-    //                 from_token_info.clone(),
-    //                 to_token_info.clone(),
-    //                 from_info.clone(),
-    //                 token_info.clone(),
-    //             ],
-    //         )?;
-    //         msg!(
-    //             "approve from {} to {} amount {}: done",
-    //             from_token_info.key,
-    //             to_token_info.key,
-    //             amount
-    //         );
-    //     }
-    // }
-        // let user_address = ctx.accounts.wallet_address.key();
-        // let user_ata_address = ctx.accounts.ata_address.key();
-
-        let impact_wallet = Pubkey::from_str("6BEnkeaJBRRQbYpCmKV3qu6VpcqbEhKVQ79qtDFKsTLn").unwrap();
-        let team_wllet = Pubkey::from_str("EZdngbKFNhD58TcgQzTpdynEjekV13iuJT16bip9xjws").unwrap();
-        let token_info = ctx.accounts.token_program.to_account_info();
-        let test = ctx.accounts.metadata.key();
-
-        msg!(
-            " impact_wallet {}, team_wllet {}, token_info {}, test {}, amount={}",
-            // user_address,
-            // user_ata_address,
-            impact_wallet,
-            team_wllet,token_info.key(),test, amount
-        );
-
-        // let ix = spl_token::instruction::transfer(
-        //     *spl_associated_token_account::id(),
-        //     *user_ata_address,
-        //     *impact_wallet,
-        //     *user_address,
-        //     &[user_address],
-        //     amount,
-        // )?;
-        // invoke(
-        //     &ix,
-        //     &[
-        //         user_ata_address.clone(),
-        //         impact_wallet.clone(),
-        //         user_address.clone(),
-        //         token_info.clone(),
-        //     ],
-        // )?;
-        msg!(
-            "to {} amount {}: done",
-            // user_ata_address,
-            impact_wallet,
-            amount
-        );
-
+        // msg!("input: {:?}", input);
+        // let acc_iter = &mut accounts.iter();
+        // let from_info = next_account_info(acc_iter)?;
+        // let from_token_info = next_account_info(acc_iter)?;
+        // let to_token_info = next_account_info(acc_iter)?;
+        // let token_info = next_account_info(acc_iter)?;
+        // // It's a good idea to check all accounts in a real app...
 
         msg!("Initializing Mint Ticket");
         let cpi_accounts = MintTo {
@@ -181,7 +86,6 @@ pub mod nft_mint {
                 symbol=>{},
                 uri=>{},
                 ", ctx.accounts.token_metadata_program.key(), ctx.accounts.metadata.key(), ctx.accounts.mint.key(), ctx.accounts.mint_authority.key(), ctx.accounts.payer.key(), title, symbol, uri);
-                
         invoke(
             &create_metadata_accounts_v2(
                 ctx.accounts.token_metadata_program.key(),
@@ -261,6 +165,4 @@ pub struct MintNFT<'info> {
     /// CHECK: This is not dangerous because we don't read or write from this account
     #[account(mut)]
     pub master_edition: UncheckedAccount<'info>,
-    // pub wallet_address: AccountInfo<'info>,
-    // pub ata_address: AccountInfo<'info>,
 }

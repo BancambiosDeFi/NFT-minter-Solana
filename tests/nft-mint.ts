@@ -6,22 +6,13 @@ import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
   createInitializeMintInstruction,
+  createAssociatedTokenAccount,
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
-import {Connection, PublicKey} from "@solana/web3.js"
-
-async function getOrCreateAssociatedTokenAccount(
-  connection: Connection,
-  mint: PublicKey,
-  wallet: PublicKey
-): Promise<PublicKey> {
-  const associatedTokenAddress = await getAssociatedTokenAddress(mint, wallet)
-  if (await connection.getAccountInfo(associatedTokenAddress)) {
-      return associatedTokenAddress
-  }
-  console.log("create associated token account for", wallet.toBase58())
-  return;
-}
+import {readFileSync} from "fs"
+import {Connection, Keypair, PublicKey, sendAndConfirmTransaction, Transaction, TransactionInstruction,} from "@solana/web3.js"
+import lo from "buffer-layout"
+import BN from "bn.js"
 
 async function main() {
 const { PublicKey, SystemProgram } = anchor.web3;
@@ -112,13 +103,6 @@ const { PublicKey, SystemProgram } = anchor.web3;
     console.log("Metadata address: ", metadataAddress.toBase58());
     console.log("MasterEdition: ", masterEdition.toBase58());
     console.log("===rpc========",program.rpc.mintNft);
-    const connection = new Connection("https://api.devnet.solana.com", "confirmed")
-    const userTokenPubkey = await getOrCreateAssociatedTokenAccount(connection, 
-        new anchor.web3.PublicKey("CZyEKArwVYSKkv9im3grGNXmggbPfS8YGUovBnzoKQ4s"), // test USDT
-        new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") 
-    );
-    console.log("userTokenPubkey", userTokenPubkey.toBase58())
-    console.log("walletAddress", program.provider.wallet.publicKey.toBase58())
     const tx = await program.rpc.mintNft(
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
@@ -135,8 +119,6 @@ const { PublicKey, SystemProgram } = anchor.web3;
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           masterEdition: masterEdition,
-          // walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
-          // ataAddress: userTokenPubkey,
         },
       },
       
