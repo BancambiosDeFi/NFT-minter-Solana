@@ -136,8 +136,8 @@ const { PublicKey, SystemProgram } = anchor.web3;
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           masterEdition: masterEdition,
-          walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
-          ataAddress: userTokenPubkey,
+          // walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
+          // ataAddress: userTokenPubkey,
         },
       },
       
