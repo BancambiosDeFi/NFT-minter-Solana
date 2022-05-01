@@ -6,13 +6,9 @@ import {
   createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddress,
   createInitializeMintInstruction,
-  createAssociatedTokenAccount,
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
-import {readFileSync} from "fs"
-import {Connection, Keypair, PublicKey, sendAndConfirmTransaction, Transaction, TransactionInstruction,} from "@solana/web3.js"
-import lo from "buffer-layout"
-import BN from "bn.js"
+import {Connection, PublicKey} from "@solana/web3.js"
 
 async function getOrCreateAssociatedTokenAccount(
   connection: Connection,
