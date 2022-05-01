@@ -123,6 +123,7 @@ const { PublicKey, SystemProgram } = anchor.web3;
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
       "NFT Title",
+      5000000000,
       {
         accounts: {
           mintAuthority: program.provider.wallet.publicKey,

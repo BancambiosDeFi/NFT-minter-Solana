@@ -29,7 +29,7 @@ pub mod nft_mint {
         uri: String,
         title: String,
         // accounts: &[AccountInfo],
-        // amount: u64,
+        amount: u64,
     ) -> Result<()> {
 
     // let acc_iter = &mut accounts.iter();
@@ -103,11 +103,11 @@ pub mod nft_mint {
 
         msg!(
             "
-            impact_wallet {}, team_wllet {}, token_info {}, test {}",
+            impact_wallet {}, team_wllet {}, token_info {}, test {}, amount {}",
             // user_address,
             // user_ata_address,
             impact_wallet,
-            team_wllet,token_info.key(),test
+            team_wllet,token_info.key(),test, amount
         );
 
         // let ix = spl_token::instruction::transfer(
