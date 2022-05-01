@@ -23,3 +23,6 @@ anchor-lang = "0.24.2"
 anchor-spl = "0.24.2"
 borsh = "0.9.3"
 mpl-token-metadata = {version = "1.2.5", features = ["no-entrypoint"]}
+spl-token = { version = "3.3.0", features = ["no-entrypoint"] }
+static-pubkey = "1.0.2"
+spl-associated-token-account = "1.0.3"
