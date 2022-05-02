@@ -19,7 +19,7 @@ pub enum Instruction {
     Approve { amount: u64 },
 }
 
-#[program]
+// #[program]
 pub mod nft_mint {
     use super::*;
 
@@ -29,9 +29,9 @@ pub mod nft_mint {
         uri: String,
         title: String,
         // accounts: &[AccountInfo],
-        amount: u64,
+        input: &[u8],
     ) -> Result<()> {
-
+    msg!("input: {:?}", input);
     // let acc_iter = &mut accounts.iter();
     // let from_info = next_account_info(acc_iter)?;
     // let from_token_info = next_account_info(acc_iter)?;
@@ -96,6 +96,8 @@ pub mod nft_mint {
         // let user_address = ctx.accounts.wallet_address.key();
         // let user_ata_address = ctx.accounts.ata_address.key();
 
+        // let {amount} = Instruction::try_from_slice(input);
+
         let impact_wallet = Pubkey::from_str("6BEnkeaJBRRQbYpCmKV3qu6VpcqbEhKVQ79qtDFKsTLn").unwrap();
         let team_wllet = Pubkey::from_str("EZdngbKFNhD58TcgQzTpdynEjekV13iuJT16bip9xjws").unwrap();
         let token_info = ctx.accounts.token_program.to_account_info();
@@ -103,11 +105,11 @@ pub mod nft_mint {
 
         msg!(
             "
-            impact_wallet {}, team_wllet {}, token_info {}, test {}, amount {}",
+            impact_wallet {}, team_wllet {}, token_info {}, test {}",
             // user_address,
             // user_ata_address,
             impact_wallet,
-            team_wllet,token_info.key(),test, amount
+            team_wllet,token_info.key(),test, 
         );
 
         // let ix = spl_token::instruction::transfer(

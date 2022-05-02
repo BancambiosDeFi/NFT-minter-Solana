@@ -9,6 +9,8 @@ import {
   MINT_SIZE,
 } from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
 import {Connection, PublicKey} from "@solana/web3.js"
+import lo from "buffer-layout"
+import BN from "bn.js"
 
 async function getOrCreateAssociatedTokenAccount(
   connection: Connection,
@@ -26,7 +28,7 @@ async function getOrCreateAssociatedTokenAccount(
 async function main() {
 const { PublicKey, SystemProgram } = anchor.web3;
   // Configure the client to use the local cluster.
-  const userAddr = new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro");
+  // const userAddr = new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro");
   require("dotenv").config(); 
   anchor.setProvider(anchor.Provider.env());
   const program = anchor.workspace
@@ -73,13 +75,13 @@ const { PublicKey, SystemProgram } = anchor.web3;
     
     const NftTokenAccount = await getAssociatedTokenAddress(
       mintKey.publicKey,
-      userAddr
+      program.provider.wallet.publicKey
     );
     console.log("NFT Account: ", NftTokenAccount.toBase58());
 
     const mint_tx = new anchor.web3.Transaction().add(
       anchor.web3.SystemProgram.createAccount({
-        fromPubkey: userAddr,
+        fromPubkey: program.provider.wallet.publicKey,
         newAccountPubkey: mintKey.publicKey,
         space: MINT_SIZE,
         programId: TOKEN_PROGRAM_ID,
@@ -88,13 +90,13 @@ const { PublicKey, SystemProgram } = anchor.web3;
       createInitializeMintInstruction(
         mintKey.publicKey,
         0,
-        userAddr,
-        userAddr
+        program.provider.wallet.publicKey,
+        program.provider.wallet.publicKey
       ),
       createAssociatedTokenAccountInstruction(
-        userAddr,
+        program.provider.wallet.publicKey,
         NftTokenAccount,
-        userAddr,
+        program.provider.wallet.publicKey,
         mintKey.publicKey
       )
     );
@@ -105,7 +107,7 @@ const { PublicKey, SystemProgram } = anchor.web3;
 
     console.log("Account: ", res);
     console.log("Mint key: ", mintKey.publicKey.toString());
-    console.log("User: ", userAddr.toString());
+    console.log("User: ", program.provider.wallet.publicKey.toString());
 
     const metadataAddress = await getMetadata(mintKey.publicKey);
     const masterEdition = await getMasterEdition(mintKey.publicKey);
@@ -119,21 +121,23 @@ const { PublicKey, SystemProgram } = anchor.web3;
         new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") 
     );
     console.log("userTokenPubkey", userTokenPubkey.toBase58())
-    console.log("walletAddress", userAddr.toBase58())
+    console.log("walletAddress", program.provider.wallet.publicKey.toBase58())
+    const amount = Buffer.alloc(8) // 50 SPL
+    lo.ns64("value").encode(new BN("50000000000"), amount)
     const tx = await program.rpc.mintNft(
       mintKey.publicKey,
       "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
       "NFT Title",
-      5000000000,
+      Buffer.of(1, ...amount),
       {
         accounts: {
-          mintAuthority: userAddr,
+          mintAuthority: program.provider.wallet.publicKey,
           mint: mintKey.publicKey,
           tokenAccount: NftTokenAccount,
           tokenProgram: TOKEN_PROGRAM_ID,
           metadata: metadataAddress,
           tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-          payer: userAddr,
+          payer: program.provider.wallet.publicKey,
           systemProgram: SystemProgram.programId,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           masterEdition: masterEdition,
