@@ -1,155 +1,232 @@
-import * as anchor from "@project-serum/anchor";
-import { Program } from "@project-serum/anchor";
-import { NftMint } from "../target/types/nft_mint";
-import {
-  TOKEN_PROGRAM_ID,
-  createAssociatedTokenAccountInstruction,
-  getAssociatedTokenAddress,
-  createInitializeMintInstruction,
-  MINT_SIZE,
-} from "@solana/spl-token"; // IGNORE THESE ERRORS IF ANY
-import {Connection, PublicKey} from "@solana/web3.js"
-import lo from "buffer-layout"
-import BN from "bn.js"
+import * as anchor from '@project-serum/anchor';
+import { NftMaker } from '../target/types/nft_maker';
 
-async function getOrCreateAssociatedTokenAccount(
-  connection: Connection,
-  mint: PublicKey,
-  wallet: PublicKey
-): Promise<PublicKey> {
-  const associatedTokenAddress = await getAssociatedTokenAddress(mint, wallet)
-  if (await connection.getAccountInfo(associatedTokenAddress)) {
-      return associatedTokenAddress
-  }
-  console.log("create associated token account for", wallet.toBase58())
-  return;
-}
+import { Program, BN, } from "@project-serum/anchor";
+import { 
+  PublicKey, 
+  Keypair, 
+  SystemProgram, 
+  SYSVAR_RENT_PUBKEY, 
+  LAMPORTS_PER_SOL,
+  AccountMeta,
+  TransactionInstruction,
+  Transaction,
 
-async function main() {
-const { PublicKey, SystemProgram } = anchor.web3;
+} from "@solana/web3.js";
+
+import assert from 'assert';
+
+const {
+  TOKEN_PROGRAM_ID, 
+  ASSOCIATED_TOKEN_PROGRAM_ID, 
+  Token
+} = require("@solana/spl-token");
+
+import { struct, u8, u32 } from '@solana/buffer-layout';
+
+
+
+describe('nft-maker', () => {
+
   // Configure the client to use the local cluster.
-  // const userAddr = new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro");
-  require("dotenv").config(); 
-  anchor.setProvider(anchor.Provider.env());
-  const program = anchor.workspace
-    .NftMint as Program<NftMint>;
-    // Add your test here.
-    const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
-      "metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s"
-    );
-    const lamports: number =
-      await program.provider.connection.getMinimumBalanceForRentExemption(
-        MINT_SIZE
-      );
-    const getMetadata = async (
-      mint: anchor.web3.PublicKey
-    ): Promise<anchor.web3.PublicKey> => {
-      return (
-        await anchor.web3.PublicKey.findProgramAddress(
-          [
-            Buffer.from("metadata"),
-            TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            mint.toBuffer(),
-          ],
-          TOKEN_METADATA_PROGRAM_ID
-        )
-      )[0];
-    };
+  const provider = anchor.Provider.env();
+  anchor.setProvider(provider);
 
-    const getMasterEdition = async (
-      mint: anchor.web3.PublicKey
-    ): Promise<anchor.web3.PublicKey> => {
-      return (
-        await anchor.web3.PublicKey.findProgramAddress(
-          [
-            Buffer.from("metadata"),
-            TOKEN_METADATA_PROGRAM_ID.toBuffer(),
-            mint.toBuffer(),
-            Buffer.from("edition"),
-          ],
-          TOKEN_METADATA_PROGRAM_ID
-        )
-      )[0];
-    };
-    const mintKey: anchor.web3.Keypair = anchor.web3.Keypair.generate();
+  const program = anchor.workspace.NftMaker as Program<NftMaker>;
+
+  const seed = "nft-maker";
+  const recipient = Keypair.generate().publicKey;
+  const TOKEN_METADATA_PROGRAM_ID = new anchor.web3.PublicKey(
+    'metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s',
+  );
+
+  it('Is initialized!', async () => {
+
+    const [configKey, configNonce] = await PublicKey.findProgramAddress(
+      [Buffer.from(seed)],
+      program.programId
+    );
+
+    const [vaultkey, vaultNonce] = await PublicKey.findProgramAddress(
+      [configKey.toBuffer()],
+      program.programId
+    );
+
+    console.log("configKey: ", configKey.toString());
+    console.log("vaultkey: ", vaultkey.toString());
+
+    const configAccountInfo = await provider.connection.getAccountInfo(configKey);
+    if (configAccountInfo) {
+      console.log("program had been initialized!");
+    } else {
+      const amount = new BN(LAMPORTS_PER_SOL);
+      const tx = await program.rpc.initialize(
+        configNonce,
+        vaultNonce,
+        provider.wallet.publicKey,
+        amount,
+        {
+          accounts: {
+            signer: provider.wallet.publicKey,
+            payerVault: vaultkey,
+            nftMintSettings: configKey,
+            systemProgram: SystemProgram.programId,
+            rent: SYSVAR_RENT_PUBKEY
+          },
+          signers: [provider.wallet.payer],
+  
+        });
+        const vaultBanlance = await provider.connection.getBalance(vaultkey);
+        console.log("tx: ", tx);
+        assert.equal(vaultBanlance, LAMPORTS_PER_SOL);
+    }
     
-    const NftTokenAccount = await getAssociatedTokenAddress(
-      mintKey.publicKey,
-      program.provider.wallet.publicKey
-    );
-    console.log("NFT Account: ", NftTokenAccount.toBase58());
+  });
 
-    const mint_tx = new anchor.web3.Transaction().add(
-      anchor.web3.SystemProgram.createAccount({
-        fromPubkey: program.provider.wallet.publicKey,
-        newAccountPubkey: mintKey.publicKey,
-        space: MINT_SIZE,
-        programId: TOKEN_PROGRAM_ID,
-        lamports,
-      }),
-      createInitializeMintInstruction(
-        mintKey.publicKey,
-        0,
-        program.provider.wallet.publicKey,
-        program.provider.wallet.publicKey
-      ),
-      createAssociatedTokenAccountInstruction(
-        program.provider.wallet.publicKey,
-        NftTokenAccount,
-        program.provider.wallet.publicKey,
-        mintKey.publicKey
-      )
-    );
-    const res = await program.provider.send(mint_tx, [mintKey]);
-    console.log(
-      await program.provider.connection.getParsedAccountInfo(mintKey.publicKey)
+ 
+  it('mint one NFT!', async () => {
+
+    const listener = program.addEventListener("MintEvent", (event, slot) => {
+      console.log("slot: ", slot);
+      console.log("event status: ", event.status);
+      console.log("event mint: ", event.mint);
+      console.log("event recipient: ", event.recipient);
+      console.log("event nft count: ", event.nftCount);
+      program.removeEventListener(listener);
+    });
+
+    const [mintKey, mintNonce] = await PublicKey.findProgramAddress(
+      [Buffer.from("7876875575")],
+      program.programId
     );
 
-    console.log("Account: ", res);
-    console.log("Mint key: ", mintKey.publicKey.toString());
-    console.log("User: ", program.provider.wallet.publicKey.toString());
-
-    const metadataAddress = await getMetadata(mintKey.publicKey);
-    const masterEdition = await getMasterEdition(mintKey.publicKey);
-
-    console.log("Metadata address: ", metadataAddress.toBase58());
-    console.log("MasterEdition: ", masterEdition.toBase58());
-    console.log("===rpc========",program.rpc.mintNft);
-    const connection = new Connection("https://api.devnet.solana.com", "confirmed")
-    const userTokenPubkey = await getOrCreateAssociatedTokenAccount(connection, 
-        new anchor.web3.PublicKey("CZyEKArwVYSKkv9im3grGNXmggbPfS8YGUovBnzoKQ4s"), // test USDT
-        new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro") 
+    const assTokenKey = await Token.getAssociatedTokenAddress(
+      ASSOCIATED_TOKEN_PROGRAM_ID,
+      TOKEN_PROGRAM_ID,
+      mintKey,
+      recipient
     );
-    console.log("userTokenPubkey", userTokenPubkey.toBase58())
-    console.log("walletAddress", program.provider.wallet.publicKey.toBase58())
-    const amount = Buffer.alloc(8) // 50 SPL
-    lo.ns64("value").encode(new BN("50000000000"), amount)
-    const tx = await program.rpc.mintNft(
-      mintKey.publicKey,
-      "https://arweave.net/y5e5DJsiwH0s_ayfMwYk-SnrZtVZzHLQDSTZ5dNRUHA",
-      "NFT Title",
-      Buffer.of(1, ...amount),
+
+    const [configKey, ] = await PublicKey.findProgramAddress(
+      [Buffer.from(seed)],
+      program.programId
+    );
+
+    const [vaultkey, nonce] = await PublicKey.findProgramAddress(
+      [configKey.toBuffer()],
+      program.programId
+    );
+  
+    const [metadatakey, _] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        Buffer.from('metadata'),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mintKey.toBuffer(),
+      ],
+      TOKEN_METADATA_PROGRAM_ID,
+    );
+  
+    const [masterkey, __] = await anchor.web3.PublicKey.findProgramAddress(
+      [
+        Buffer.from('metadata'),
+        TOKEN_METADATA_PROGRAM_ID.toBuffer(),
+        mintKey.toBuffer(),
+        Buffer.from('edition'),
+      ],
+      TOKEN_METADATA_PROGRAM_ID,
+    );
+
+    console.log("mintKey: ", mintKey.toString());
+    console.log("configKey: ", configKey.toString());
+    console.log("payerVault: ", vaultkey.toString());
+
+    console.log("recipient: ", recipient.toString());
+    console.log("assTokenKey: ", assTokenKey.toString());
+
+    console.log("metadatakey: ", metadatakey.toString());
+    console.log("masterkey: ", masterkey.toString());
+
+    
+    enum TokenInstruction {
+      RequestUnits = 0,
+      RequestHeapFrame = 1,
+    }
+    interface RequestUnitsInstructionData {
+      instruction: TokenInstruction.RequestUnits;
+      units: number;
+      additional_fee: number;
+    }
+
+    const burnCheckedInstructionData = struct<RequestUnitsInstructionData>([
+      u8('instruction'),
+      u32('units'),
+      u32('additional_fee'),
+    ]);
+
+    function createRequestUnitsInstruction(
+      units: number,
+      additional_fee: number
+    ): TransactionInstruction {
+      const keys: AccountMeta[] = [];
+      const data = Buffer.alloc(burnCheckedInstructionData.span);
+      burnCheckedInstructionData.encode(
+          {
+              instruction: TokenInstruction.RequestUnits,
+              units,
+              additional_fee,
+          },
+          data
+      );
+      const programId = new PublicKey('ComputeBudget111111111111111111111111111111');
+
+      return new TransactionInstruction({
+          programId,
+          keys,
+          data
+      });
+
+    }
+
+    
+    const mintNftIns = program.instruction.mintingNft(
+      "test-NFT",
+      "7876875575",
+      "https://arweave.net/sCuT4ASiUgq7JxgU_3aoq0xJLpwH2Z1z2R2_xwPM8uc",
+      1000,
+      false,
+      mintNonce,
       {
         accounts: {
-          mintAuthority: program.provider.wallet.publicKey,
-          mint: mintKey.publicKey,
-          tokenAccount: NftTokenAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          metadata: metadataAddress,
+          signer: provider.wallet.publicKey,
+          recipient: recipient,
+          recipientToken: assTokenKey,
+          payerVault: vaultkey,
+          nftMintSettings: configKey,
+          mint: mintKey,
+          metadata: metadatakey,
+          masteredition: masterkey,
           tokenMetadataProgram: TOKEN_METADATA_PROGRAM_ID,
-          payer: program.provider.wallet.publicKey,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
           systemProgram: SystemProgram.programId,
-          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-          masterEdition: masterEdition,
-          // walletAddress:  new anchor.web3.PublicKey("CD6To88A4KrApbnDUkHrwpjMY5ufgPpVQzm9rRX5d3ro"),
-          // ataAddress: userTokenPubkey,
+          clock: anchor.web3.SYSVAR_CLOCK_PUBKEY,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY
         },
-      },
-      
-    );
-    console.log("Your transaction signature", tx);
-}
+        signers: [provider.wallet.payer],
+        
+      });
 
-main()
-    .then(() => process.exit(0))
-    .catch((err) => console.error(err))
+    const requestUnitsIns = createRequestUnitsInstruction(250000, 0);
+    const trans = new Transaction().add(
+      requestUnitsIns,
+    )
+    .add(
+      mintNftIns,
+    );
+    const tx = await provider.send(trans);
+    console.log("tx: ", tx);
+
+  });
+
+
+});
